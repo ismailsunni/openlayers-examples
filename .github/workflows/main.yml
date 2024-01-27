@@ -37,5 +37,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: dist # Adjust if your build output directory is different
+          BRANCH: gh-pages
+          FOLDER: dist # Adjust if your build output directory is different
