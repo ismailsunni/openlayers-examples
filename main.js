@@ -2,6 +2,7 @@
 
 import "ol/ol.css";
 import { Map, View } from "ol";
+import * as olHas from "ol/has";
 import TileLayer from "ol/layer/Tile";
 import { OSM, Vector as VectorSource } from "ol/source";
 import { Vector as VectorLayer } from "ol/layer";
@@ -48,19 +49,48 @@ var map = new Map({
 vectorLayer.on("postrender", function (event) {
   const context = event.context;
   const size = map.getSize();
-  const center = [size[0] / 2, size[1] / 2];
-  const holeSize = 50; // Half of the square size
+
+  var height = size[1] * olHas.DEVICE_PIXEL_RATIO,
+    width = size[0] * olHas.DEVICE_PIXEL_RATIO;
+
+  var minx = width * 0.25,
+    miny = height * 0.25,
+    maxx = width * 0.75,
+    maxy = height * 0.75;
+
+  // const center = [size[0] / 2, size[1] / 2];
+  // const holeSize = 100; // Half of the square size
 
   context.save();
-  context.fillStyle = "rgba(0, 0, 255, 0.5)";
-  context.strokeStyle = "rgba(0, 0, 0, 1)";
-  context.lineWidth = 2;
 
   context.beginPath();
-  context.rect(center[0] - holeSize, center[1] - holeSize, 100, 100);
-  context.rect(0, 0, size[0], size[1]);
-  context.fill("evenodd");
-  context.stroke();
+  // Outside polygon, must be clockwise
+  context.moveTo(0, 0);
+  context.lineTo(width, 0);
+  context.lineTo(width, height);
+  context.lineTo(0, height);
+  context.lineTo(0, 0);
+  context.closePath();
+
+  // Inner polygon,must be counter-clockwise
+  context.moveTo(minx, miny);
+  context.lineTo(minx, maxy);
+  context.lineTo(maxx, maxy);
+  context.lineTo(maxx, miny);
+  context.lineTo(minx, miny);
+  context.closePath();
+
+  context.fillStyle = "rgba(0, 5, 25, 0.75)";
+  context.fill();
+  // context.fillStyle = "rgba(0, 0, 255, 0.5)";
+  // context.strokeStyle = "rgba(0, 0, 0, 0)";
+  // context.lineWidth = 0;
+
+  // context.beginPath();
+  // context.rect(center[0] - holeSize, center[1] - holeSize, 200, 200);
+  // context.rect(0, 0, size[0], size[1]);
+  // context.fill("evenodd");
+  // context.stroke();
 
   context.restore();
 });
