@@ -9,6 +9,8 @@ import { Vector as VectorLayer } from "ol/layer";
 import Polygon from "ol/geom/Polygon";
 import Feature from "ol/Feature";
 import { fromLonLat } from "ol/proj";
+import Style from "ol/style/Style";
+import Fill from "ol/style/Fill";
 
 // Create a polygon feature covering the whole world in EPSG:4326
 var worldPolygon = new Feature({
@@ -27,6 +29,11 @@ var worldPolygon = new Feature({
 var vectorLayer = new VectorLayer({
   source: new VectorSource({
     features: [worldPolygon],
+  }),
+  style: new Style({
+    fill: new Fill({
+      color: "rgba(255, 255, 255, 0)",
+    }),
   }),
 });
 
@@ -82,15 +89,8 @@ vectorLayer.on("postrender", function (event) {
 
   context.fillStyle = "rgba(0, 5, 25, 0.75)";
   context.fill();
-  // context.fillStyle = "rgba(0, 0, 255, 0.5)";
-  // context.strokeStyle = "rgba(0, 0, 0, 0)";
-  // context.lineWidth = 0;
 
-  // context.beginPath();
-  // context.rect(center[0] - holeSize, center[1] - holeSize, 200, 200);
-  // context.rect(0, 0, size[0], size[1]);
-  // context.fill("evenodd");
-  // context.stroke();
-
+  console.log(minx, miny, maxx, maxy);
+  console.log(width, height);
   context.restore();
 });
