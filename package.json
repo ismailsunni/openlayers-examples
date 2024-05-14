@@ -1,7 +1,7 @@
 {
   "name": "layer-context-rendering",
   "dependencies": {
-    "ol": "9.0"
+    "ol": "9.1.0"
   },
   "devDependencies": {
     "gh-pages": "^6.1.1",

@@ -11,6 +11,7 @@ import Feature from "ol/Feature";
 import { fromLonLat } from "ol/proj";
 import Style from "ol/style/Style";
 import Fill from "ol/style/Fill";
+import { getRenderPixel } from "ol/render";
 
 // Create a polygon feature covering the whole world in EPSG:4326
 var worldPolygon = new Feature({
@@ -56,41 +57,25 @@ var map = new Map({
 vectorLayer.on("postrender", function (event) {
   const context = event.context;
   const size = map.getSize();
-
-  var height = size[1] * olHas.DEVICE_PIXEL_RATIO,
-    width = size[0] * olHas.DEVICE_PIXEL_RATIO;
-
-  var minx = width * 0.25,
-    miny = height * 0.25,
-    maxx = width * 0.75,
-    maxy = height * 0.75;
-
-  // const center = [size[0] / 2, size[1] / 2];
-  // const holeSize = 100; // Half of the square size
+  const [width, height] = size;
+  const [minx, miny] = size.map((n) => n * 0.25);
+  const [maxx, maxy] = size.map((n) => n * 0.75);
 
   context.save();
-
   context.beginPath();
   // Outside polygon, must be clockwise
-  context.moveTo(0, 0);
-  context.lineTo(width, 0);
-  context.lineTo(width, height);
-  context.lineTo(0, height);
-  context.lineTo(0, 0);
-  context.closePath();
+  context.moveTo(...getRenderPixel(event, [0, 0]));
+  context.lineTo(...getRenderPixel(event, [width, 0]));
+  context.lineTo(...getRenderPixel(event, [width, height]));
+  context.lineTo(...getRenderPixel(event, [0, height]));
+  // Inner polygon, must be counter-clockwise
+  context.moveTo(...getRenderPixel(event, [minx, miny]));
+  context.lineTo(...getRenderPixel(event, [minx, maxy]));
+  context.lineTo(...getRenderPixel(event, [maxx, maxy]));
+  context.lineTo(...getRenderPixel(event, [maxx, miny]));
 
-  // Inner polygon,must be counter-clockwise
-  context.moveTo(minx, miny);
-  context.lineTo(minx, maxy);
-  context.lineTo(maxx, maxy);
-  context.lineTo(maxx, miny);
-  context.lineTo(minx, miny);
   context.closePath();
-
   context.fillStyle = "rgba(0, 5, 25, 0.75)";
   context.fill();
-
-  console.log(minx, miny, maxx, maxy);
-  console.log(width, height);
   context.restore();
 });
